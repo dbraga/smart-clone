@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+require 'json'
+
+def clone_params_passed
+	ARGV.count > 0
+end
+
+if clone_params_passed
+	# load config
+	json = JSON.parse(open($0[0..$0.rindex(/\//)] + "/config.json").read)
+	# get profile ids
+	ids = json["profiles"].map{ |p|  p["id"]}
+	# select default profile as the first
+	profile = ids.first
+	puts "Git profile for new repository ["+ids.join(',')+"]: ["+profile+"]"
+	input = STDIN.gets.chomp
+	if (!input.empty?)
+		profile = input
+	end
+	profile = json["profiles"].find { |p| p['id']==profile }
+	# Get name and email from the profile
+	name = profile['name']
+	email = profile['email']
+end	
+
+# Clone repo
+`git clone #{ ARGV.join(" ")}`
+
+if clone_params_passed
+	# Set committer name/email
+	repo_folder = `ls -t #{Dir.pwd} | head -1`.delete!("\n")
+	newrepo_git_config = Dir.pwd + "/" + repo_folder +"/.git/config"
+	open(newrepo_git_config, 'a') { |f|
+	  f.puts "[user]
+	        name = "+name+"
+	        email = "+email
+	}
+end
