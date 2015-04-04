@@ -2,13 +2,12 @@
 
 Replace LOCATION-OF-SMART-CLONE variable with the  directory of the smart-clone repo and then execute
 
-``
+```
 git config --global alias.cl '!ruby <LOCATION-OF-SMART-CLONE>/smart-clone'
-``
+```
 
 To use the alias, just type
 
-``
+```
 git cl <repo_to_clone>
-
-``
+```
